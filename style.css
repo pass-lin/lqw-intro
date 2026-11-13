@@ -257,11 +257,24 @@ a:hover { color: var(--accent); }
   margin-bottom: 20px;
 }
 
+/* 本愿：题词两行，楷体，回退宋体 */
+.gatha {
+  margin: 0 0 26px;
+}
+.gatha__text {
+  font-family: "KaiTi", "Kaiti SC", "STKaiti", "Songti SC", "SimSun", serif;
+  font-size: clamp(1.05rem, 1.9vw, 1.32rem);
+  line-height: 2.15;
+  letter-spacing: .1em;
+  color: var(--ink-2);
+  margin: 0;
+}
+
 .hero h1 {
-  font-size: clamp(3.1rem, 7.4vw, 5.4rem);
-  line-height: .96;
+  font-size: clamp(1.9rem, 4.4vw, 3rem);
+  line-height: 1.18;
   margin: 0 0 22px;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 
 .hero__lead {
@@ -279,6 +292,17 @@ a:hover { color: var(--accent); }
   font-size: 16px;
   max-width: 48ch;
   line-height: 1.68;
+}
+
+.hero__oath {
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  font-weight: 600;
+  line-height: 1.7;
+  color: var(--ink);
+  max-width: 34em;
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-2);
 }
 
 .hero__actions {
@@ -957,7 +981,8 @@ a:hover { color: var(--accent); }
   .nav__links a { padding: 13px 6px; font-size: 16px; }
   .nav__links a.is-active::after { display: none; }
   .nav__links .nav__cta { margin: 10px 0 0; text-align: center; }
-  .hero h1 { font-size: clamp(2.7rem, 13vw, 3.6rem); }
+  .hero h1 { font-size: clamp(1.62rem, 7.2vw, 2rem); }
+  .gatha__text { font-size: 1rem; line-height: 2; letter-spacing: .06em; }
   .section__head h2 { font-size: clamp(1.8rem, 6.6vw, 2.5rem); }
   .kicker { font-size: 10.5px; letter-spacing: .1em; }
   .hero__actions .btn { flex: 1 1 auto; justify-content: center; }
@@ -1021,5 +1046,6 @@ html[lang="zh-CN"] .paper__side-label { letter-spacing: .1em; }
 }
 
 html[lang="en"] h1 { letter-spacing: -0.03em; }
+html[lang="en"] .hero h1 { max-width: 14em; }
 html[lang="en"] .hero__lead { max-width: 40ch; line-height: 1.6; }
 html[lang="en"] .paper__claim { max-width: 46ch; }

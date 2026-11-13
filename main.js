@@ -235,6 +235,11 @@
       el.setAttribute('content', lang === 'en' && EN[key] ? EN[key] : el.dataset.zhContent);
     });
 
+    /* 只属于中文的块，例如首屏的题词 */
+    document.querySelectorAll('[data-zh-only]').forEach(function (el) {
+      el.hidden = (lang === 'en');
+    });
+
     if (langBtn) {
       langBtn.textContent = lang === 'en' ? '中文' : 'EN';
       langBtn.setAttribute('aria-label', lang === 'en' ? '切换到中文' : 'Switch to English');

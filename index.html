@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n="meta.title">林庆文｜大模型推理效率</title>
-<meta name="description" data-i18n-content="meta.desc" content="林庆文，广东工业大学博士研究生。研究大模型的推理开销：参数、前向次数与状态显存。">
+<title data-i18n="meta.title">林庆文｜让资源决定成本，不决定能力</title>
+<meta name="description" data-i18n-content="meta.desc" content="林庆文，广东工业大学博士研究生。研究大模型的推理开销：参数、前向次数与状态显存。四篇论文各压一处，成本落在别处，能力没有跟着停。">
 <meta name="author" content="林庆文">
-<meta property="og:title" data-i18n-content="meta.ogTitle" content="林庆文｜大模型推理效率">
-<meta property="og:description" data-i18n-content="meta.ogDesc" content="把推理开销拆成三项：参数、前向次数、状态显存。三篇论文各压一项。">
+<meta property="og:title" data-i18n-content="meta.ogTitle" content="林庆文｜让资源决定成本，不决定能力">
+<meta property="og:description" data-i18n-content="meta.ogDesc" content="资源决定成本，不决定能力。四篇论文各压一处：参数、前向次数、状态显存。">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317150f'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' fill='%23faf8f4' text-anchor='middle'%3E%E6%9E%97%3C/text%3E%3C/svg%3E">
 <script>document.documentElement.classList.add('js');</script>
@@ -42,14 +42,18 @@
   <section class="hero" id="top">
     <div class="wrap hero__grid">
       <div class="hero__text">
-        <p class="kicker reveal" data-i18n="hero.kicker">大模型 · 高效推理 · 长上下文</p>
-        <h1 class="reveal" data-i18n="hero.name">林庆文</h1>
+        <p class="kicker reveal" data-i18n="hero.kicker">林庆文 · 广东工业大学</p>
+        <div class="gatha reveal" data-zh-only>
+          <p class="gatha__text">于一微尘中，悉见诸世界；<br>念念相续，无有间断。</p>
+        </div>
+        <h1 class="reveal" data-i18n="hero.name">让资源决定成本，<br>不决定能力</h1>
         <p class="hero__lead reveal" data-i18n="hero.lead">
           大模型的推理开销主要在三处：模型有多大、一次预测要跑多少次前向、状态要占多少显存。我在每一处做压缩，并处理压缩之后暴露出来的失效。
         </p>
         <p class="hero__sub reveal" data-i18n="hero.sub">
-          一亿 token 的前缀之后，模型仍然可以推理。36M 的参数在长程预测上追平 1B。7B 的模型在零样本数学推理上超过 72B 的基线。
+          一亿 token 的前缀之后，基线数值溢出，SANE 仍达 33.46 到 35.56，短上下文无损。36M 的参数在长程预测上追平 1B。7B 的模型在零样本数学推理上超过 72B 的基线。
         </p>
+        <p class="hero__oath reveal" data-i18n="hero.oath">只要还有一处成本落在能力上，这个愿就没有做完。</p>
         <div class="hero__actions reveal">
           <a class="btn btn--primary" href="#papers" data-i18n="hero.btnPapers">读论文</a>
           <a class="btn" href="#research" data-i18n="hero.btnMap">研究地图</a>
@@ -88,9 +92,9 @@
             在一亿 token 的长度上，注意力的计算量已经不可接受，而循环结构的状态大小与序列长度无关。超长上下文下循环几乎是唯一的选择，代价是状态本身就是全部记忆。把 RWKV-7 推到一亿 token 会看到一种稳定的失效形态：稀疏底架上出现局部范数升高。衰减让弱更新的通道保持很小，不均匀的注入让少数通道累积到极端值。SANE 在 chunk 边界做逐头的自适应 tanh 压缩，压异常值，保留低幅背景，不破坏 chunk 内的并行。
           </p>
           <p class="thread__note" data-i18n="mem.note">
-            α 大于等于 8 时数值稳定，推理能力归零。α 越大，压缩越弱，长前缀之后丢掉的功能越多。
+            安全窗只有 3 到 5。窗口左边伤短上下文，右边数值稳定但推理归零。
           </p>
-          <p class="thread__stat" data-i18n="mem.stat">一亿 token 前缀 · 安全阈值 3 到 5 · 之后仍达 33.46 到 35.56</p>
+          <p class="thread__stat" data-i18n="mem.stat">一亿 token 前缀 · 之后仍达 33.46 到 35.56 · 短上下文无损</p>
           <a class="thread__link" href="#sane" data-i18n="mem.link">SANE · arXiv 2026 <span>→</span></a>
         </article>
 
@@ -99,15 +103,15 @@
             <span class="thread__key">02</span>
             <span class="thread__name" data-i18n="fwd.name">前向次数 · 一次出整段</span>
           </div>
-          <h3 data-i18n="fwd.title">一次前向，加快循环</h3>
+          <h3 data-i18n="fwd.title">并行解码的配套偏置</h3>
           <p data-i18n="fwd.body">
-            非自回归预测一次产出整个区间，H 步解码压成 1 次前向。循环结构另有好处：状态随时间推进，参数量与序列长度无关，时序上的归纳偏置在 36M 的规模上仍然够用。两者直接结合会出问题。预测区没有观测，状态靠 placeholder 推进，历史会沿着逐步转移被衰减。HART 处理的就是这个结合：让 attention 与 RWKV 交替，给预测位置一条取回历史的路径。
+            非自回归预测一次产出整个区间，H 步解码压成 1 次前向。并行解码本身快，难点是配套的归纳偏置。循环结构带来时序上的偏置，参数量与序列长度无关。两者直接结合会出问题：预测区没有观测，状态靠 placeholder 推进，历史沿着逐步转移被衰减。逐层检查显示多数层的状态注入范数下降，转移矩阵范数基本不变。HART 让 attention 与 RWKV 交替，给预测位置一条直接取回历史的路径。
           </p>
           <p class="thread__note" data-i18n="fwd.note">
-            循环结构承担建模，attention 补的是取回路径。参数压到 1/28，长程不退化。
+            循环结构承担建模，attention 补的是取回路径。代价是架构里多出 attention 块。
           </p>
-          <p class="thread__stat" data-i18n="fwd.stat">36M 参数 · 长程 MASE 0.752 对 0.754 · 中长程优于纯 RWKV</p>
-          <a class="thread__link" href="#hart" data-i18n="fwd.link">HART · arXiv 2026 <span>→</span></a>
+          <p class="thread__stat" data-i18n="fwd.stat">36M 参数 · 长程 MASE 0.752 对 1B 的 0.754 · 中长程优于纯 RWKV</p>
+          <a class="thread__link" href="#hart" data-i18n="fwd.link">HART · ICLR 2027 <span>→</span></a>
         </article>
 
         <article class="thread thread--param reveal" id="thread-param">
@@ -120,7 +124,7 @@
             训练时的一条路是蒸馏，把大模型的解题能力压进小模型，成本落在训练阶段（ICIC 2024）。CMCTS 把压缩放到推理时，不训练：无训练的模型在树搜索里会反复生成同几条续写，搜索预算花在同质状态上。CMCTS 在扩展阶段把动作限制在四类，在模拟阶段用偏序规则和过程奖励模型筛掉走不通的转移。
           </p>
           <p class="thread__note" data-i18n="param.note">
-            单次前向的模型小了十倍，代价是推理阶段要跑更多次搜索。这份开销从参数挪到了测试时。
+            单次前向的模型小了十倍，代价是推理阶段要跑更多次搜索。这份开销从参数挪到了测试时，采样次数没有上限。
           </p>
           <p class="thread__stat" data-i18n="param.stat">7B 零样本 83.4% · 比 72B CoT 高 4.8 点 · 三个组件逐一消融均掉点</p>
           <a class="thread__link" href="#cmcts" data-i18n="param.link">CMCTS · Applied Intelligence 2026 <span>→</span></a>
@@ -134,7 +138,7 @@
     <div class="wrap">
       <header class="section__head reveal">
         <p class="eyebrow" data-i18n="papers.eyebrow">02 论文</p>
-        <h2 data-i18n="papers.title">三篇主线</h2>
+        <h2 data-i18n="papers.title">三处开销，四篇论文</h2>
       </header>
 
       <div class="filters reveal" role="group" aria-label="按开销筛选" data-i18n-aria="filters.label">
@@ -157,7 +161,7 @@
             <h3 class="paper__title">SANE: State Anomaly Neutralization for Stable Extreme-Context Delta-Rule Models</h3>
             <p class="paper__authors"><strong>Qingwen Lin</strong>, Boyan Xu, Xiao Liu, Zhifeng Hao, Ruichu Cai</p>
             <p class="paper__claim" data-i18n="sane.claim">
-              一亿 token 时，注意力已经算不起，循环是唯一的选择；此时状态的失效集中在少数通道上。
+              一亿 token 时注意力已经算不起，循环是唯一的选择。失效集中在少数通道上，压住那几条通道，一亿 token 之后仍能推理。
             </p>
             <p class="paper__body" data-i18n="sane.body">
               循环结构的状态大小与序列长度无关，注意力的计算量随长度增长。在超长上下文这个量级上，这一差别决定可行性。Delta-Rule 模型把历史压进一个固定大小的状态，状态本身就是全部记忆。把 RWKV-7 推到一亿 token 会看到一种稳定的失效形态：稀疏底架上出现局部范数升高。衰减让弱更新的通道保持很小，不均匀的注入让少数通道累积到极端值。SANE 在 chunk 边界做逐头的自适应 tanh 压缩，压异常值，保留低幅背景，不破坏 chunk 内的并行。
@@ -173,7 +177,7 @@
             <p class="paper__side-label" data-i18n="sane.side">关键数字</p>
             <dl class="stats">
               <div><dt data-i18n="sane.s1t">追踪前缀</dt><dd data-i18n="sane.s1v">100<span>M tokens</span></dd></div>
-              <div><dt data-i18n="sane.s2t">安全阈值</dt><dd data-i18n="sane.s2v">3 到 5<span>α</span></dd></div>
+              <div><dt data-i18n="sane.s2t">安全窗</dt><dd data-i18n="sane.s2v">3 到 5<span>α</span></dd></div>
               <div><dt data-i18n="sane.s3t">前缀之后仍达</dt><dd data-i18n="sane.s3v">33.46 到 35.56</dd></div>
             </dl>
           </aside>
@@ -197,7 +201,7 @@
       <!-- HART -->
       <article class="paper paper--fwd reveal" id="hart" data-thread="fwd">
         <div class="paper__meta">
-          <span class="tag tag--venue">arXiv:2610.12883 · 2026</span>
+          <span class="tag tag--venue">ICLR 2027 · arXiv:2610.12883</span>
           <span class="tag" data-i18n="hart.tag1">时序基础模型</span>
           <span class="tag" data-i18n="hart.tag2">RWKV</span>
         </div>
@@ -207,7 +211,7 @@
             <h3 class="paper__title">HART: Hybrid Attention-RWKV Time series Foundation Model</h3>
             <p class="paper__authors"><strong>Qingwen Lin</strong>, Boyan Xu, Shifeng Xie, Zhifeng Hao, Keli Zhang, Ruichu Cai</p>
             <p class="paper__claim" data-i18n="hart.claim">
-              一次前向和循环的归纳偏置放在一起，历史会在预测区衰减。交替之后，36M 追平 1B。
+              并行解码本身快，难点是配套的归纳偏置。纯 RWKV-7 在预测区被衰减，交替之后 36M 追平 1B。
             </p>
             <p class="paper__body" data-i18n="hart.body">
               非自回归预测一次出整段，循环状态要穿过整个预测区，期间没有新观测。RWKV-7 在这个设定下退化：逐层检查显示，多数层的状态注入范数下降，转移矩阵范数基本不变，衰减来自逐步转移。HART 保留循环块承担时序建模，间插 attention 块，让预测位置可以直接取回历史。
@@ -308,10 +312,10 @@
             <h3 class="paper__title">From Large to Tiny: Distilling and Refining Mathematical Expertise for Math Word Problems with Weakly Supervision</h3>
             <p class="paper__authors"><strong>Qingwen Lin</strong>, Boyan Xu, Zhengting Huang, Ruichu Cai</p>
             <p class="paper__claim" data-i18n="fltt.claim">
-              弱监督下只有答案、没有方程，规则搜索补出来的方程常常与题面不符；让大模型一次把方程写对，小模型就够用了。
+              弱监督只有答案、没有方程，规则搜索补出来的方程能算出正确的数，语义却对不上题面。先让大模型把方程写对，小模型就够用了。
             </p>
             <p class="paper__body" data-i18n="fltt.body">
-              人工标注「问题-方程」对成本高，弱监督设定只用最终答案作监督信号，现有方法靠随机游走、束搜索等规则搜索补方程，会搜到计算结果正确、语义却对不上的假匹配。FLTT 分两段处理：蒸馏阶段用多轮对话让 ChatGPT 生成并自校正方程，再做格式检查与结果检查；精炼阶段用已成功的样本微调一个中间模型，对搜索失败的数据做迭代复搜。两段数据合起来训练 UniLM 或 T5 这类小模型。
+              人工标注「问题-方程」对成本高，弱监督设定只用最终答案作监督信号，现有方法靠随机游走、束搜索等规则搜索补方程，搜出来的方程只保证算得对，语义对不上也没有约束。FLTT 分两段处理：蒸馏阶段用多轮对话让 ChatGPT 生成并自校正方程，再做格式检查与结果检查；精炼阶段用已成功的样本微调一个中间模型，对搜索失败的数据做迭代复搜。两段数据合起来训练 UniLM 或 T5 这类小模型。
             </p>
             <div class="paper__actions">
               <a class="btn btn--sm" href="https://arxiv.org/abs/2403.14390" target="_blank" rel="noopener">arXiv</a>
@@ -356,10 +360,10 @@
       <div class="about__grid">
         <div class="about__bio reveal">
           <p data-i18n="about.p1">
-            2001 年生，广东工业大学计算机学院博士研究生。研究大模型的推理效率：在参数、前向次数和状态显存上同时压缩，同时保住能力。工作覆盖语言模型与时序基础模型。
+            2001 年生，广东工业大学计算机学院博士研究生。研究大模型的推理开销：压参数、压前向次数、压状态显存，并处理压完之后落在别处的成本。工作覆盖语言模型与时序基础模型。
           </p>
           <p data-i18n="about.p2">
-            三篇论文对应三次取舍：把状态压到 O(1)，看一亿 token 之后还剩多少能力；用一次前向替代 H 步解码；用小模型加搜索替代更大的模型。
+            四篇论文对应四次取舍：把状态压到 O(1)，看一亿 token 之后还剩多少能力；用一次前向替代 H 步解码；用小模型加搜索替代更大的模型；把大模型写好的方程蒸馏给小模型。
           </p>
 
         </div>
